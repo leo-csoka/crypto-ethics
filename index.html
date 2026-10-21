@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encryption on the Internet: Evidence Files</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#545454;--mist:#d9d9d9;--khaki:#aeaa9a;--olive:#7f7c65;--paper:#f4f2eb}
+*{box-sizing:border-box}
+body{margin:0;font:19px/1.5 Calibri,Carlito,"Segoe UI",sans-serif;color:var(--ink);background:#fff}
+h1,h2{font-family:"Atkinson Hyperlegible",Verdana,sans-serif;font-weight:700;color:#000;line-height:1.1;margin:0}
+h1{font-size:clamp(2.4rem,7vw,4.6rem)}
+h2{font-size:clamp(1.4rem,3.4vw,1.9rem);margin-bottom:10px}
+.sh{font-style:italic;font-size:1.35rem;text-transform:lowercase;margin:0 0 6px;color:var(--olive)}
+main{max-width:980px;margin:0 auto;padding:0 20px 60px}
+.prog{position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--mist);padding:8px 20px;display:flex;gap:14px;align-items:center;font-style:italic;font-size:.95rem}
+.prog span.t{flex:1;height:10px;background:var(--mist)}.prog span.t i{display:block;height:100%;width:0;background:var(--olive);transition:width .4s}
+.sq{display:flex;gap:8px;margin:34px 0 18px}.sq i{width:56px;height:56px;display:block}
+.toy{background:var(--mist);padding:18px 20px;margin:26px 0;max-width:620px}
+.toy input[type=text]{width:100%;font:inherit;padding:8px;border:2px solid var(--ink);background:#fff;color:#000}
+.toy output{display:block;margin:12px 0 4px;font:700 1.5rem "Atkinson Hyperlegible",monospace;color:#000;word-break:break-all;min-height:2rem}
+.toy label{display:flex;gap:10px;align-items:center;margin-top:8px}.toy input[type=range]{flex:1;accent-color:var(--olive)}
+nav a{display:flex;gap:6px;height:34px;margin:8px 0;text-decoration:none;font-size:1rem;max-width:560px}
+nav a i{width:14px;display:block;background:var(--c)}nav a b{flex:1;background:var(--c);color:var(--t);padding:0 12px;line-height:34px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav a:hover b,nav a:focus-visible b{outline:3px solid #000;outline-offset:2px}
+.doc{padding:46px 0 10px;display:flex}.doc:nth-of-type(even){justify-content:flex-end}
+.sheet{width:min(100%,560px);filter:drop-shadow(0 7px 7px rgba(0,0,0,.28));transform:rotate(var(--r,-1deg));transition:transform .3s}
+.sheet:hover{transform:rotate(0)}
+.paper{position:relative;padding:50px 28px 22px 62px;color:#2b2b2b;
+background:linear-gradient(90deg,transparent 48px,#d98c8c 48px 50px,transparent 50px),
+linear-gradient(115deg,transparent 38%,rgba(0,0,0,.06) 39%,transparent 41%),linear-gradient(62deg,rgba(255,255,255,.7) 55%,transparent 57%),
+repeating-linear-gradient(transparent 0 27px,#b7c4d8 27px 28px) 0 22px,var(--paper);
+clip-path:polygon(0 1.5%,6% 0,13% 1%,24% .2%,37% 1.3%,52% 0,66% 1%,80% .1%,92% 1.2%,100% 0,99.5% 40%,100% 70%,99% 100%,88% 99%,74% 100%,58% 98.8%,41% 100%,25% 99%,10% 100%,0 98.8%,.6% 60%)}
+.clip{position:absolute;top:-6px;left:26px;width:15px;height:44px;border:3px solid #8d8d8d;border-radius:9px;z-index:2}
+.clip:after{content:"";position:absolute;left:2px;top:12px;width:5px;height:26px;border:2px solid #8d8d8d;border-radius:5px}
+.stamp{position:absolute;top:14px;right:22px;border:3px solid var(--olive);color:var(--olive);padding:0 10px;font-style:italic;font-weight:700;transform:rotate(4deg);opacity:.85}
+.paper h2{font-size:1.45rem;margin-top:10px}.paper p{margin:0 0 14px;line-height:28px}
+.redact{font:inherit;border:0;padding:0 6px;background:#111;color:#111;cursor:pointer;transition:background .3s,color .3s}
+.redact.on{background:var(--mist);color:#111;cursor:default}
+.hint{font-size:.85rem;font-style:italic;color:#666;line-height:1.2!important}
+.cite{font-size:.82rem;line-height:1.3!important;padding-left:1.4em;text-indent:-1.4em;border-top:1px dashed #999;padding-top:8px;color:#444;overflow-wrap:anywhere}
+.chart{margin:4px 0 14px}.chart div{line-height:1.25;margin-bottom:10px}.trk{display:block;height:16px;background:var(--mist);margin:3px 0}.trk i{display:block;height:100%;background:var(--olive);transition:width .6s}
+.chart em{font-size:.9rem}
+button.b{font:inherit;background:var(--ink);color:#fff;border:0;padding:8px 16px;cursor:pointer;margin:0 8px 8px 0}
+button.b:hover{background:#000}button.b[aria-pressed=true]{background:var(--olive)}
+#out{background:var(--mist);padding:16px 20px;margin-top:10px;max-width:700px;min-height:3rem}
+section.blk{padding-top:56px;max-width:700px}
+.ref{padding-left:2em;text-indent:-2em;margin:0 0 10px;font-size:.95rem;overflow-wrap:anywhere}
+a{color:var(--olive)}:focus-visible{outline:3px solid #000;outline-offset:2px}
+@media(max-width:620px){.paper{padding:48px 16px 20px 54px}.doc{display:block}.sq i{width:40px;height:40px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="prog" aria-live="polite"><span id="pt">files declassified: 0</span><span class="t"><i id="pf"></i></span></div>
+<main>
+<div class="sq" aria-hidden="true"><i style="background:#545454"></i><i style="background:#d9d9d9"></i><i style="background:#aeaa9a"></i><i style="background:#7f7c65"></i></div>
+<header>
+<h1>Encryption on the Internet</h1>
+<p class="sh" style="font-size:1.6rem;margin-top:10px">evidence files, 1976 to today</p>
+<p style="max-width:34em">A law promised your online messages were private. These files show what happened next. Tap the black bars to declassify them.</p>
+<div class="toy">
+<p class="sh" style="margin:0">try it: the oldest lock</p>
+<input id="msg" type="text" value="meet me at noon" aria-label="Message to encrypt" maxlength="60">
+<label>key <input id="key" type="range" min="0" max="25" value="3" aria-label="Cipher key"> <b id="kv">3</b></label>
+<output id="enc" for="msg key"></output>
+<small>A Caesar cipher shifts every letter by the key. Modern encryption follows the same idea with math no one can reverse by hand.</small>
+</div>
+</header>
+<nav id="toc" aria-label="Evidence files"></nav>
+<div id="docs"></div>
+
+<section class="blk" id="ethics">
+<p class="sh">the ethics question</p>
+<h2>You build a messaging app. Police ask for a way in.</h2>
+<p>Do you add a backdoor that only lawful requests can use?</p>
+<div role="group" aria-label="Your choice"><button class="b" data-c="0" aria-pressed="false">Add the backdoor</button><button class="b" data-c="1" aria-pressed="false">Keep end-to-end encryption</button></div>
+<div id="out" aria-live="polite">Pick one to see both sides.</div>
+</section>
+
+<section class="blk" id="verdict">
+<p class="sh">so, did the promise hold?</p>
+<h2>The words stayed. The practice moved.</h2>
+<p>The 1986 law still says interception needs legal authority. The files show how exceptions, secret legal readings, and weak links in the network widened what was collected. Encryption became the tool users and companies reached for in response, and lawmakers are still arguing over who gets a key.</p>
+</section>
+
+<section class="blk" id="refs"><p class="sh">references</p><div id="rl"></div></section>
+</main>
+<script>
+const R={
+ecpa:'Electronic Communications Privacy Act of 1986, Pub. L. No. 99-508, 100 Stat. 1848 (1986). <a href="https://www.congress.gov/bill/99th-congress/house-bill/4952">https://www.congress.gov/bill/99th-congress/house-bill/4952</a>',
+dh:'Diffie, W., & Hellman, M. E. (1976). New directions in cryptography. <i>IEEE Transactions on Information Theory, 22</i>(6), 644–654. <a href="https://doi.org/10.1109/TIT.1976.1055638">https://doi.org/10.1109/TIT.1976.1055638</a>',
+levy:'Levy, S. (2001). <i>Crypto: How the code rebels beat the government—saving privacy in the digital age</i>. Viking.',
+gm:'Greenwald, G., & MacAskill, E. (2013, June 6). NSA Prism program taps in to user data of Apple, Google and others. <i>The Guardian</i>. <a href="https://www.theguardian.com/world/2013/jun/06/us-tech-giants-nsa-data">https://www.theguardian.com/world/2013/jun/06/us-tech-giants-nsa-data</a>',
+gs:'Gellman, B., & Soltani, A. (2013, October 30). NSA infiltrates links to Yahoo, Google data centers worldwide, Snowden documents say. <i>The Washington Post</i>. <a href="https://www.washingtonpost.com/world/national-security/nsa-infiltrates-links-to-yahoo-google-data-centers-worldwide-snowden-documents-say/2013/10/30/e51d661e-4166-11e3-8b74-d89d714ca4dd_story.html">https://www.washingtonpost.com/world/national-security/nsa-infiltrates-links-to-yahoo-google-data-centers-worldwide-snowden-documents-say/2013/10/30/e51d661e-4166-11e3-8b74-d89d714ca4dd_story.html</a>',
+cook:'Cook, T. (2016, February 16). <i>A message to our customers</i>. Apple. <a href="https://www.apple.com/customer-letter/">https://www.apple.com/customer-letter/</a>',
+eng:'Google’s annual report shows more web traffic is encrypted. (2017, October 21). <i>Engadget</i>. <a href="https://www.engadget.com/2017/10/21/googles-annual-report-shows-more-web-traffic-is-encrypted/">https://www.engadget.com/2017/10/21/googles-annual-report-shows-more-web-traffic-is-encrypted/</a>',
+epic:'Electronic Privacy Information Center. (2026, June 11). <i>FISA Section 702 almost certain to expire after House votes against extension, EPIC continues to urge reforms</i>. <a href="https://epic.org/fisa-section-702-almost-certain-to-expire-after-house-votes-against-extension-epic-continues-to-urge-reforms/">https://epic.org/fisa-section-702-almost-certain-to-expire-after-house-votes-against-extension-epic-continues-to-urge-reforms/</a>',
+acm:'Association for Computing Machinery. (2018). <i>ACM code of ethics and professional conduct</i>. <a href="https://www.acm.org/code-of-ethics">https://www.acm.org/code-of-ethics</a>'};
+const chart=`<div class="chart"><div>Google’s own traffic over HTTPS<span class="trk"><i data-a="50" data-b="89"></i></span><em data-a="50% (early 2014)" data-b="89% (Oct 2017)"></em></div><div>Top 100 sites that default to HTTPS<span class="trk"><i data-a="37" data-b="71"></i></span><em data-a="37% (2016)" data-b="71% (2017)"></em></div><button class="b" id="tg" aria-pressed="false">Show the later numbers</button></div>`;
+const D=[
+{y:1986,h:'The promise',p:'Congress makes it a federal crime to intercept electronic communications without legal authority.',x:'Exceptions exist, including court-approved foreign-intelligence surveillance under FISA.',s:'ecpa',n:'Electronic Communications Privacy Act'},
+{y:1976,h:'Strangers can share a secret',p:'Two people who have never met can agree on a secret key over a public channel.',x:'Before this, keys had to be hand-delivered in advance.',s:'dh',n:'Public-key idea published'},
+{y:1993,h:'The Crypto Wars',p:'The U.S. government pushes the Clipper chip, which keeps a spare key for investigators. Programmers fight back with tools like PGP.',x:'Strong encryption was treated like a weapon for export.',s:'levy',n:'Clipper chip and the Crypto Wars'},
+{y:2013,h:'PRISM',p:'Documents leaked by Edward Snowden describe a program that collects user data from major tech companies.',x:'It operated under Section 702 of the FISA Amendments Act.',s:'gm',n:'Snowden leaks: PRISM'},
+{y:2013,h:'Smile for the cable',p:'Another file shows the NSA copying data as it traveled between company data centers, where it was not encrypted.',x:'About 181 million records were collected in 30 days.',s:'gs',n:'Data center links tapped'},
+{y:2016,h:'Apple vs. the FBI',p:'A court orders Apple to help unlock an iPhone. Apple refuses to build the tool.',x:'Apple argued a tool like this could unlock any iPhone.',s:'cook',n:'Apple vs. the FBI'},
+{y:2017,h:'Encrypted by default',p:'After the leaks, companies rushed to encrypt. Move the slider to see how fast it grew.',x:'Tap again for newer numbers: Google’s Transparency Report tracks them.',s:'eng',w:chart,n:'HTTPS becomes the norm'},
+{y:2026,h:'The law lapses, collection continues',p:'Section 702 expires for the first time since 2008. According to a privacy group, surveillance continues anyway.',x:'Court certifications keep it running through March 2027.',s:'epic',n:'Section 702 sunsets'}];
+const C=[['#7f7c65','#fff'],['#aeaa9a','#222'],['#d9d9d9','#222'],['#545454','#fff']];
+let toc='',docs='';
+D.forEach((d,i)=>{const c=C[i%4];
+toc+=`<a href="#d${i}" style="--c:${c[0]};--t:${c[1]}"><i></i><i></i><b>${d.y}: ${d.n}</b></a>`;
+docs+=`<section class="doc" id="d${i}"><div class="sheet" style="--r:${i%2?1.2:-1.3}deg"><div class="paper"><span class="clip"></span><span class="stamp">exhibit ${i+1}</span><p class="sh" style="margin:0">${d.y}</p><h2>${d.h}</h2><p>${d.p}</p>${d.w||''}<p><span class="hint">tap the bar:</span><br><button class="redact" aria-label="Declassify hidden text">${d.x}</button></p><p class="cite">${R[d.s]}</p></div></div></section>`});
+document.getElementById('toc').innerHTML=toc;document.getElementById('docs').innerHTML=docs;
+document.getElementById('rl').innerHTML=Object.values(R).sort((a,b)=>a.replace(/<[^>]+>/g,'').localeCompare(b.replace(/<[^>]+>/g,''))).map(r=>`<p class="ref">${r}</p>`).join('');
+const upd=()=>{const n=document.querySelectorAll('.redact.on').length;pt.textContent=`files declassified: ${n} of ${D.length}`;pf.style.width=n/D.length*100+'%'};
+upd();
+document.addEventListener('click',e=>{const b=e.target.closest('.redact');if(b){b.classList.add('on');upd()}});
+const sh=(s,k)=>s.replace(/[a-z]/gi,c=>{const o=c<'a'?65:97;return String.fromCharCode((c.charCodeAt(0)-o+k)%26+o)});
+const draw=()=>{kv.textContent=key.value;enc.textContent=sh(msg.value,+key.value)};msg.oninput=key.oninput=draw;draw();
+let later=false;const tg=document.getElementById('tg');
+const bars=()=>{const k=later?'b':'a';document.querySelectorAll('.chart i').forEach(i=>i.style.width=i.dataset[k]+'%');document.querySelectorAll('.chart em').forEach(e=>e.textContent=e.dataset[k]);tg.textContent=later?'Show the earlier numbers':'Show the later numbers';tg.setAttribute('aria-pressed',later)};
+bars();tg.onclick=()=>{later=!later;bars()};
+const E=[['Add the backdoor','For: investigators can reach evidence in serious crimes. Against: security researchers warn that a built-in key can be stolen, leaked, or misused, which exposes every user.'],['Keep end-to-end encryption','For: only the sender and receiver can read messages, so a breach or a secret order reveals nothing. Against: law enforcement says it loses access to evidence it has a court order for.']];
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-c]').forEach(x=>x.setAttribute('aria-pressed',x===b));const e=E[b.dataset.c];out.innerHTML=`<b>${e[0]}.</b> ${e[1]}<br><br>The ACM Code of Ethics asks engineers to respect privacy (1.6) and to build systems that are robustly secure (2.9). It does not settle the tradeoff for you.<br><small class="cite" style="display:block;border:0;margin-top:8px">${R.acm}</small>`});
+</script>
+</body>
+</html>
