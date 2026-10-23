@@ -52,6 +52,20 @@ section.blk{padding-top:56px;max-width:700px}
 a{color:var(--olive)}:focus-visible{outline:3px solid #000;outline-offset:2px}
 @media(max-width:620px){.paper{padding:48px 16px 20px 54px}.doc{display:block}.sq i{width:40px;height:40px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.tabs{margin:8px 0}.tp{min-height:150px}.tp[hidden]{display:none}
+.toy code,.chart code{display:block;background:var(--mist);padding:6px 10px;margin:6px 0;font-family:Consolas,monospace;font-size:.95rem;overflow-wrap:anywhere;color:#111}
+.toy b.n{font-family:"Atkinson Hyperlegible",sans-serif;color:#000}
+.qa{margin:2px 0 14px}.res{font-size:.95rem;line-height:1.35;min-height:1.4em;margin-top:4px;color:#222}
+.paper .b{padding:4px 12px;font-size:.95rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:14px 0}
+.card{font:inherit;text-align:left;display:block;width:100%;margin:6px 0;padding:8px 12px;background:var(--khaki);border:0;cursor:grab;color:#111}
+.card[aria-pressed=true]{background:var(--olive);color:#fff}
+#app{background:var(--mist);padding:14px;min-height:260px;border:3px dashed var(--olive)}#app.over{background:#cfcdbf}
+.slot{background:#fff;padding:8px 12px;margin:8px 0}.slot i{display:block;color:var(--olive)}
+.x{font:inherit;font-size:.85rem;border:0;background:none;text-decoration:underline;cursor:pointer;color:var(--ink);padding:0}
+#rep{margin-top:18px}.who{margin:16px 0}.who .trk{max-width:320px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -63,23 +77,24 @@ a{color:var(--olive)}:focus-visible{outline:3px solid #000;outline-offset:2px}
 <p class="sh" style="font-size:1.6rem;margin-top:10px">evidence files, 1976 to today</p>
 <p style="max-width:34em">A law promised your online messages were private. These files show what happened next. Tap the black bars to declassify them.</p>
 <div class="toy">
-<p class="sh" style="margin:0">try it: the oldest lock</p>
-<input id="msg" type="text" value="meet me at noon" aria-label="Message to encrypt" maxlength="60">
+<p class="sh" style="margin:0">learn three crypto tricks</p>
+<div class="tabs" role="group" aria-label="Techniques"><button class="b" data-t="0" aria-pressed="true">Scramble letters</button><button class="b" data-t="1" aria-pressed="false">Share a secret in public</button><button class="b" data-t="2" aria-pressed="false">Make a fingerprint</button></div>
+<div class="tp" id="t0"><input id="msg" type="text" value="meet me at noon" aria-label="Message to encrypt" maxlength="60">
 <label>key <input id="key" type="range" min="0" max="25" value="3" aria-label="Cipher key"> <b id="kv">3</b></label>
 <output id="enc" for="msg key"></output>
-<small>A Caesar cipher shifts every letter by the key. Modern encryption follows the same idea with math no one can reverse by hand.</small>
+<small>A Caesar cipher shifts every letter by the key. Anyone can crack it by trying all 26 keys, so real ciphers use far bigger keys.</small></div>
+<div class="tp" id="t1" hidden><p style="margin:0 0 6px">Alice and Bob pick private numbers and swap results in public. They still end up with the same secret.</p>
+<label>Alice’s private number <input id="ra" type="range" min="1" max="10" value="4" aria-label="Alice private number"></label>
+<label>Bob’s private number <input id="rb" type="range" min="1" max="10" value="7" aria-label="Bob private number"></label>
+<code id="dhout"></code><small>This is the Diffie–Hellman idea with tiny numbers. A spy sees only the swapped numbers. With huge numbers, working backward is too slow to be practical.</small></div>
+<div class="tp" id="t2" hidden><input id="hin" type="text" value="meet me at noon" aria-label="Text to fingerprint" maxlength="60">
+<code id="hout"></code><small>This is SHA-256 (first 24 characters). Change one letter and the whole fingerprint changes. Fingerprints check files and protect stored passwords.</small></div>
 </div>
 </header>
 <nav id="toc" aria-label="Evidence files"></nav>
 <div id="docs"></div>
 
-<section class="blk" id="ethics">
-<p class="sh">the ethics question</p>
-<h2>You build a messaging app. Police ask for a way in.</h2>
-<p>Do you add a backdoor that only lawful requests can use?</p>
-<div role="group" aria-label="Your choice"><button class="b" data-c="0" aria-pressed="false">Add the backdoor</button><button class="b" data-c="1" aria-pressed="false">Keep end-to-end encryption</button></div>
-<div id="out" aria-live="polite">Pick one to see both sides.</div>
-</section>
+
 
 <section class="blk" id="verdict">
 <p class="sh">so, did the promise hold?</p>
@@ -87,6 +102,13 @@ a{color:var(--olive)}:focus-visible{outline:3px solid #000;outline-offset:2px}
 <p>The 1986 law still says interception needs legal authority. The files show how exceptions, secret legal readings, and weak links in the network widened what was collected. Encryption became the tool users and companies reached for in response, and lawmakers are still arguing over who gets a key.</p>
 </section>
 
+<section class="blk" id="build" style="max-width:none">
+<p class="sh">your turn: the ethics test</p>
+<h2>Build a messaging app</h2>
+<p style="max-width:34em">Every choice has a cost, and someone will be unhappy. Drag choices into your app (or tap them), then press build to hear from the public, activists, and the government.</p>
+<div class="grid"><div id="pool"></div><div><div id="app" aria-label="Your app"><p class="sh" style="margin:0">your app</p><div id="slots"></div></div><button class="b" id="build" style="margin-top:12px">Build my app</button></div></div>
+<div id="rep" aria-live="polite"></div>
+</section>
 <section class="blk" id="refs"><p class="sh">references</p><div id="rl"></div></section>
 </main>
 <script>
@@ -110,6 +132,15 @@ const D=[
 {y:2016,h:'Apple vs. the FBI',p:'A court orders Apple to help unlock an iPhone. Apple refuses to build the tool.',x:'Apple argued a tool like this could unlock any iPhone.',s:'cook',n:'Apple vs. the FBI'},
 {y:2017,h:'Encrypted by default',p:'After the leaks, companies rushed to encrypt. Move the slider to see how fast it grew.',x:'Tap again for newer numbers: Google’s Transparency Report tracks them.',s:'eng',w:chart,n:'HTTPS becomes the norm'},
 {y:2026,h:'The law lapses, collection continues',p:'Section 702 expires for the first time since 2008. According to a privacy group, surveillance continues anyway.',x:'Court certifications keep it running through March 2027.',s:'epic',n:'Section 702 sunsets'}];
+const qa=(q,o)=>`<div class="qa"><b>${q}</b><br>${o.map(x=>`<button class="b" aria-pressed="false" data-r="${x[1]}">${x[0]}</button>`).join('')}<div class="res" aria-live="polite"></div></div>`;
+const W={0:qa('Is it legal? Tap a case.',[['Stranger reads your email','A federal crime without legal authority.'],['Police, with a court order','Allowed, if the legal process is followed.'],['Foreign-intelligence agency','Covered by separate FISA rules. That is the exception in the redacted line.']]),
+1:`<button class="b" onclick="tab(1);scrollTo({top:0,behavior:'smooth'})">Try the key swap again</button>`,
+2:`<div class="chart"><label>Key size: <b id="bv">40</b> bits<input type="range" id="bits" min="40" max="128" value="40" style="width:100%"></label><em id="bt"></em></div>`,
+3:qa('Does HTTPS stop this?',[['Yes','Not by itself. The reporting describes collection from company servers, where your HTTPS connection has already ended.'],['No','Right. The reporting describes collection from the companies’ servers, after the encrypted connection ended.']]),
+4:`<div class="chart"><p style="margin:0">What a tap on the cable sees:</p><code id="lkout">alice → bob: meet me at noon</code><button class="b" id="lk" aria-pressed="false">Encrypt the link</button></div>`,
+5:qa('You are the judge.',[['Order Apple to build it','For: investigators reach evidence in a serious case. Against: Apple said the tool could unlock any iPhone and could be misused.'],['Side with Apple','For: every user keeps a stronger lock. Against: investigators say they lose evidence a judge approved.']]),
+7:qa('Does the lapse stop the collection?',[['Yes','Not according to EPIC: court certifications keep it running through March 2027.'],['No','Correct, per EPIC. The fight is now over whether Congress adds reforms.']])};
+D.forEach((d,i)=>{if(W[i])d.w=W[i]});
 const C=[['#7f7c65','#fff'],['#aeaa9a','#222'],['#d9d9d9','#222'],['#545454','#fff']];
 let toc='',docs='';
 D.forEach((d,i)=>{const c=C[i%4];
@@ -123,10 +154,38 @@ document.addEventListener('click',e=>{const b=e.target.closest('.redact');if(b){
 const sh=(s,k)=>s.replace(/[a-z]/gi,c=>{const o=c<'a'?65:97;return String.fromCharCode((c.charCodeAt(0)-o+k)%26+o)});
 const draw=()=>{kv.textContent=key.value;enc.textContent=sh(msg.value,+key.value)};msg.oninput=key.oninput=draw;draw();
 let later=false;const tg=document.getElementById('tg');
-const bars=()=>{const k=later?'b':'a';document.querySelectorAll('.chart i').forEach(i=>i.style.width=i.dataset[k]+'%');document.querySelectorAll('.chart em').forEach(e=>e.textContent=e.dataset[k]);tg.textContent=later?'Show the earlier numbers':'Show the later numbers';tg.setAttribute('aria-pressed',later)};
+const bars=()=>{const k=later?'b':'a';document.querySelectorAll('.chart i[data-a]').forEach(i=>i.style.width=i.dataset[k]+'%');document.querySelectorAll('.chart em[data-a]').forEach(e=>e.textContent=e.dataset[k]);tg.textContent=later?'Show the earlier numbers':'Show the later numbers';tg.setAttribute('aria-pressed',later)};
 bars();tg.onclick=()=>{later=!later;bars()};
-const E=[['Add the backdoor','For: investigators can reach evidence in serious crimes. Against: security researchers warn that a built-in key can be stolen, leaked, or misused, which exposes every user.'],['Keep end-to-end encryption','For: only the sender and receiver can read messages, so a breach or a secret order reveals nothing. Against: law enforcement says it loses access to evidence it has a court order for.']];
-document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-c]').forEach(x=>x.setAttribute('aria-pressed',x===b));const e=E[b.dataset.c];out.innerHTML=`<b>${e[0]}.</b> ${e[1]}<br><br>The ACM Code of Ethics asks engineers to respect privacy (1.6) and to build systems that are robustly secure (2.9). It does not settle the tradeoff for you.<br><small class="cite" style="display:block;border:0;margin-top:8px">${R.acm}</small>`});
+const $=i=>document.getElementById(i);
+const tab=n=>{document.querySelectorAll('.tp').forEach((p,i)=>p.hidden=i!=n);document.querySelectorAll('[data-t]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t==n))};
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>tab(+b.dataset.t));
+const dh=()=>{const a=+ra.value,b=+rb.value,P=23,A=5**a%P,B=5**b%P;dhout.innerHTML=`Alice sends <b>${A}</b><br>Bob sends <b>${B}</b><br>Alice computes <b>${B**a%P}</b>, Bob computes <b>${A**b%P}</b>: same secret`};ra.oninput=rb.oninput=dh;dh();
+const hs=()=>crypto.subtle.digest('SHA-256',new TextEncoder().encode(hin.value)).then(b=>hout.textContent=[...new Uint8Array(b)].slice(0,12).map(x=>x.toString(16).padStart(2,'0')).join(''));hin.oninput=hs;hs();
+document.addEventListener('click',e=>{const q=e.target.closest('.qa button');if(q){const p=q.parentNode;p.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===q));p.querySelector('.res').textContent=q.dataset.r}});
+const bf=()=>{const b=+bits.value,s=2**b/1e9;bv.textContent=b;let t;for(const[l,d,n]of [[60,1,'seconds'],[3600,60,'minutes'],[86400,3600,'hours'],[3.15e7,86400,'days']])if(s<l){t=(s/d).toFixed(1)+' '+n;break}if(!t){const y=s/3.15e7;t=y<1e9?Math.round(y).toLocaleString()+' years':y.toExponential(1)+' years'}bt.textContent='At 1 billion guesses per second, cracking it takes about '+t+'. About 40 bits was the typical 1990s export limit.'};bits.oninput=bf;bf();
+lk.onclick=()=>{const on=lk.getAttribute('aria-pressed')!='true';lk.setAttribute('aria-pressed',on);lk.textContent=on?'Remove encryption':'Encrypt the link';lkout.textContent=on?'9f2c a71e 5b03 d8f4 c6a1':'alice → bob: meet me at noon'};
+const CH=[['encryption',[['End-to-end encrypted',[2,2,-2],['Users trust that nobody can read their chats.','Activists recommend your app.','Officials warn that investigators are “going dark.”']],['Encrypted in transit only',[0,-1,1],['It works fine, but one server breach exposes every message.','Privacy groups ask why you can read everything.','Officials can get data by sending you a request.']],['No encryption',[-2,-2,1],['Users get hacked on public Wi-Fi and reviews turn angry.','Security experts call it reckless.','Access is easy, with no pushback.']]]],
+['data you keep',[['Store almost nothing',[2,1,-2],['There is little to leak.','Praised for keeping less data.','Requests return almost nothing.']],['Store metadata (who, when)',[0,-1,1],['Metadata still shows who talks to whom and when.','Critics say metadata is revealing too.','Metadata is a useful starting point for investigators.']],['Store messages for ads',[-1,-2,2],['Some users dislike ads that feel too personal.','Called invasive profiling.','Stored messages become a rich target for legal demands.']]]],
+['government requests',[['Refuse every request',[0,2,-2],['Some cheer; others worry about crime.','Hailed as a defender of users.','Expect court fights and fines.']],['Build a backdoor for court orders',[-1,-2,2],['Trust splits among users.','They warn that a built-in key can leak or be abused.','Praised as cooperative.']],['Hand over only what you have',[0,0,1],['Seen as reasonable if the data is limited.','They ask how much data you actually hold.','Satisfied, though requests keep coming.']]]],
+['transparency',[['Publish a transparency report',[1,1,0],['It builds trust.','Applauded.','Some agencies dislike public request counts.']],['Stay quiet',[-1,-2,0],['Rumors fill the gap.','They demand answers.','They have no complaint.']]]]];
+let S=[null,null,null,null];
+const drawB=()=>{pool.innerHTML=CH.map((c,k)=>`<p class="sh">${c[0]}</p>`+c[1].map((x,i)=>`<button class="card" draggable="true" data-k="${k}" data-i="${i}" aria-pressed="${S[k]===i}">${x[0]}</button>`).join('')).join('');
+slots.innerHTML=CH.map((c,k)=>`<div class="slot"><i>${c[0]}</i><b>${S[k]===null?'drop a choice here':c[1][S[k]][0]}</b>${S[k]===null?'':` <button class="x" data-k="${k}" aria-label="Remove ${c[0]}">remove</button>`}</div>`).join('')};
+const put=(k,i)=>{S[k]=i;drawB()};
+pool.onclick=e=>{const c=e.target.closest('.card');if(c)put(+c.dataset.k,+c.dataset.i)};
+pool.ondragstart=e=>{const c=e.target.closest('.card');if(c)e.dataTransfer.setData('text/plain',c.dataset.k+','+c.dataset.i)};
+app.ondragover=e=>{e.preventDefault();app.classList.add('over')};app.ondragleave=()=>app.classList.remove('over');
+app.ondrop=e=>{e.preventDefault();app.classList.remove('over');const[k,i]=e.dataTransfer.getData('text/plain').split(',').map(Number);if(!isNaN(i))put(k,i)};
+slots.onclick=e=>{const x=e.target.closest('.x');if(x)put(+x.dataset.k,null)};
+drawB();
+$('build').onclick=()=>{if(S.includes(null)){rep.textContent='Pick one choice for each of the four slots first.';return}
+const ch=S.map((i,k)=>CH[k][1][i]),[e,d,g,t]=S,is=[];
+if(e==0&&g==1)is.push('Contradiction: a backdoor breaks end-to-end encryption. If users find out, expect backlash over a promise you did not keep.');
+if(e==0&&d==2)is.push('Impossible as designed: with end-to-end encryption you cannot read messages to target ads.');
+if(e==2&&d==2)is.push('Plaintext messages stored for ads: one breach exposes everything.');
+if(g==1&&t==1)is.push('Secret access plus silence is the setup for a Snowden-style headline.');
+if(e==0&&d==0&&g==0)is.push('Strong privacy, but expect legal pressure and questions about misuse of your platform.');
+rep.innerHTML=['The public','Activists','The government'].map((w,j)=>{const s=ch.reduce((a,c)=>a+c[1][j],0),m=[...ch].sort((a,b)=>Math.abs(b[1][j])-Math.abs(a[1][j])).slice(0,2);return `<div class="who"><b>${w}: ${s>=3?'supportive':s<=-2?'angry':'divided'}</b><span class="trk"><i style="width:${Math.max(8,Math.min(100,50+s*7))}%"></i></span>${m.map(c=>c[2][j]).join(' ')}</div>`}).join('')+`<p class="sh">issues you are facing</p><ul>${(is.length?is:['No contradictions found, but every choice above still has a cost.']).map(x=>`<li>${x}</li>`).join('')}</ul><p class="sh">think it over</p><ul><li>Who did you disappoint most, and was it worth it?</li><li>Would your answer change if the user were a journalist? A suspect in a child-safety case?</li><li>The ACM Code asks you to avoid harm (1.2), respect privacy (1.6), and build secure systems (2.9). Which did your app put first?</li></ul><small class="cite" style="display:block">${R.acm}</small>`};
 </script>
 </body>
 </html>
